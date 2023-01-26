@@ -4,11 +4,11 @@ User will use command-line application to interface with a content management sy
 ## Description
 This command-line application allows users to dynamically navigate informational datbases. User is initally prompted with menu options. When user selects view departments, departments are shown, when user selects view roles, roles are shown and when users select view employees, employees are shown. Users also have the option to modify the data base by choosing options to add department, add role or add employee. Finally, there is an option to update employee role within the system. 
 
-![Mockup of Employee Tracker.](./helpers/NoteTaker2.png)
+![Mockup of Employee Tracker.](./sqlmockup.png)
 
 [GitHub Repo](https://github.com/kristinbrewer/sql-employee-tracker)
 
-[Video Walk Through](https://kbosu-note-taker.herokuapp.com/)
+[Video Walk Through](https://drive.google.com/file/d/1HAkej-2glYeo4O1t5OCe4TtBxLrT2SVU/view)
 
 
 ## Table of Contents

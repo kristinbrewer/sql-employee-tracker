@@ -47,7 +47,9 @@ const askQuestions = () => {
         addRole();
     } else if (menuList === "Add Department") {
         addDepartment();
-    }  
+    }  else if (menuList === "Update Employee Role"){
+        updateEmployee();
+    }
 })
 };//end askQuestions
 
@@ -214,4 +216,62 @@ addDepartment = () => {
             viewAllDepartments();
         }))
     })
-}
+};
+
+// update an employee function
+updateEmployee = () => {
+    // calls employees from employee table 
+    const employeeSql = `SELECT * FROM employee`;
+  
+    db.promise().query(employeeSql, (err, data) => {
+      if (err) throw err; 
+    const employeeList = data.map(({ id, first_name, last_name }) => ({ name: first_name + " "+ last_name, value: id }));
+  
+      inquirer.prompt([
+        {
+          name: 'name',
+          message: "Which employee would you like to update?",
+          type: 'list',
+          choices: employeeList
+        }
+      ])
+        .then(empAnswer => {
+          const employee = empAnswer.name;
+          const params = []; 
+          params.push(employee);
+  
+          const roleSql = `SELECT * FROM role`;
+  
+          db.promise().query(roleSql, (err, data) => {
+            if (err) throw err; 
+            const roleList = data.map(({ id, title }) => ({ name: title, value: id }));
+            
+              inquirer.prompt([
+                {
+                  name: 'role',
+                  message: "What is the employee's new role?",
+                  type: 'list',
+                  choices: roleList
+                }
+              ])
+                  .then(roleAnswer => {
+                  const role = roleAnswer.role;
+                  params.push(role); 
+                  
+                  let employee = params[0]
+                  params[0] = role
+                  params[1] = employee 
+                  const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+  
+                  connection.query(sql, params, (err, result) => {
+                    if (err) throw err;
+                  console.log("Employee has been updated!");
+                
+                  viewAllEmployees();
+            });
+          });
+        });
+      });
+    });
+  };
+  

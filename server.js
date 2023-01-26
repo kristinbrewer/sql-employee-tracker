@@ -116,26 +116,42 @@ addEmployee = () => {
         type: 'input'
     },
     {
-        name: 'role',
-        message: 'What is the role of the employee?',
-        type: 'input'
-    },
-    {
         name: 'managerID',
         message: 'What is the manager ID of the employee?',
         type: 'input'
     },
-   ])
-   .then(answer => {
-    const params = [answer.firstName, answer.lastName, answer.role, answer.managerID]
-   })
-        const sql = 'INSERT INTO employee (first_name, last_name) VALUES (?)';
-        const params = [body.first_name, body.last_name];
-    
-        db.query(sql, params, function (err, result) {
-            if (err) throw err;
-          });
-    
+
+])
+.then(answer => {
+    const params = [answer.firstName, answer.lastName, answer.managerID]
+    const roleSql ='SELECT role.id, role.title FROM role';
+    db.promise().query(roleSql, (err,data) => {
+        if (err) throw err;
+        const roles = data.map(({ id, title}) => ({ name: title, value: id}));
+        inquirer.prompt ([
+            {
+                name: 'role',
+                message: 'What is the role of the employee?',
+                type: 'list',
+                choices: roles
+             }
+        ])
+        .then(roleAnswer => {
+            const role = roleAnswer.role;
+            params.push(role);
+
+            const sql = `INSERT INTO employee (first_name, last_name, manager_id, role_id)
+                      VALUES (?, ?, ?, ?)`;
+  
+                      connection.query(sql, params, (err, result) => {
+                      if (err) throw err;
+                      console.log("Employee added!")
+                      viewAllEmployees();
+        })
+    })
+})
+
+})
 }
 addRole = () => {
     //create a new roles
@@ -173,6 +189,8 @@ addRole = () => {
             db.query(sql, params, (err, result) => {
                 if (err) throw err;
                 console.log('added roles');
+
+                viewAllRoles();
 
             });
         });

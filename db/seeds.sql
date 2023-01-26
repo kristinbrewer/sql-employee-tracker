@@ -19,10 +19,10 @@ VALUES  ("COO", 250000, 1),
 
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUE   ("Samuel","Jackson", 100, 11),
-        ("Jessica","Smith", 105, 22),
-        ("Robin","Charles", 110, 33),
-        ("Steven","Yoder", 115, 44),
-        ("Katie","Blue", 120, 55),
-        ("Fred","Flinstone", 125, 66),
-        ("Barney","Black", 130, 77);
+VALUE   ("Samuel","Jackson", 1, 11),
+        ("Jessica","Smith", 2, 22),
+        ("Robin","Charles", 3, 33),
+        ("Steven","Yoder", 4, 44),
+        ("Katie","Blue", 5, 55),
+        ("Fred","Flinstone", 6, 66),
+        ("Barney","Black", 7, 77);

@@ -10,13 +10,13 @@ const db = mysql.createConnection(
     user: "root",
     password: "",
     port: 3306,
-    database: "employeeInfo_db",
+    database: "employeeinfo_db",
 },
-console.log ('Connected to the employeeInfo_db.')
+console.log ('Connected to the employeeinfo_db.')
 );
  db.connect(function(err){
    if (err) throw err;
-     console.log('Connected to employeeInfo_db');
+     console.log('Connected to employeeinfo_db');
      askQuestions();
  });
 
@@ -37,7 +37,7 @@ const askQuestions = () => {
     const { menuList } = answers;
     if (menuList === "View All Employees"){
         viewAllEmployees();
-    } else if (menuList === "View all Departments") {
+    } else if (menuList === "View All Departments") {
         viewAllDepartments();
     } else if (menuList === "View All Roles") {
         viewAllRoles();
@@ -57,43 +57,34 @@ const askQuestions = () => {
 viewAllEmployees = () => {
 // Read employees
     console.log('View Employees:')
-    const sql = `SELECT employee.id, 
-                employee.first_name, 
-                employee.last_name, 
-                role.title,
-                employee.manager_id AS manager,
-                department.dept_name AS department, 
-                role.salary
-                FROM employee
-                LEFT JOIN role ON employee.role_id = role.id
-                LEFT JOIN department ON role.department_id = department.id
-                LEFT JOIN employee manager ON employee.manager_id = manager.id`;
-    
-    db.promise().query(sql, (err, rows) => {
+    const sql = "SELECT employee.id, employee.first_name, employee.last_name, role.title, employee.manager_id AS manager, department.dept_name AS department, role.salary FROM employee, LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id"
+;
+    const sql2 = `SELECT * FROM employee`;
+    db.query(sql2, (err, rows) => {
         if (err) throw err;
         console.table(rows);
         askQuestions();
     })
-}
+};
 //function for viewing all departments
 viewAllDepartments = () => {
     // Read department
     console.log('View Departments:')
     const sql = `SELECT department.id AS id, department.dept_name AS department FROM department`;
    
-    db.promise().query(sql, (err, rows) => {
+    db.query(sql, (err, rows) => {
         if (err) throw err;
         console.table(rows);
         askQuestions();
     })
-}
+};
 //function to view all roles 
 viewAllRoles = () => {
     console.log('View Roles:')
     // Read roles
         const sql = `SELECT role.id, role.title, role.salary, department.dept_name FROM role INNER JOIN department ON role.department_id = department.id`;
         
-        db.promise().query(sql, (err, rows) => {
+        db.query(sql, (err, rows) => {
             if (err) throw err;
             console.table(rows);
             askQuestions();
@@ -127,7 +118,7 @@ addEmployee = () => {
 .then(answer => {
     const params = [answer.firstName, answer.lastName, answer.managerID]
     const roleSql ='SELECT role.id, role.title FROM role';
-    db.promise().query(roleSql, (err,data) => {
+    db.query(roleSql, (err,data) => {
         if (err) throw err;
         const roles = data.map(({ id, title}) => ({ name: title, value: id}));
         inquirer.prompt ([
@@ -145,7 +136,7 @@ addEmployee = () => {
             const sql = `INSERT INTO employee (first_name, last_name, manager_id, role_id)
                       VALUES (?, ?, ?, ?)`;
   
-                      connection.query(sql, params, (err, result) => {
+                      db.query(sql, params, (err, result) => {
                       if (err) throw err;
                       console.log("Employee added!")
                       viewAllEmployees();
@@ -174,7 +165,7 @@ addRole = () => {
         //pulls department from department table
         const deptSql = 'SELECT dept_name, id FROM department';
 
-        db.promise().query(deptSql, (err,data) => {
+        db.query(deptSql, (err,data) => {
             if (err) throw err;
             const dept = data.map(({ dept_name, id }) => ({ name: dept_name, value: id }));
 
@@ -211,10 +202,10 @@ addDepartment = () => {
     ])
     .then (answer => {
         const sql = 'INSERT INTO department (dept_name) VALUES (?)';
-        db.query(sql, answer.addDepartment, (err, result => {
+        db.query(sql, answer.addDepartment, (err, data) => {
             if (err) throw err;
             viewAllDepartments();
-        }))
+        })
     })
 };
 
@@ -223,7 +214,7 @@ updateEmployee = () => {
     // calls employees from employee table 
     const employeeSql = `SELECT * FROM employee`;
   
-    db.promise().query(employeeSql, (err, data) => {
+    db.query(employeeSql, (err, data) => {
       if (err) throw err; 
     const employeeList = data.map(({ id, first_name, last_name }) => ({ name: first_name + " "+ last_name, value: id }));
   
@@ -242,7 +233,7 @@ updateEmployee = () => {
   
           const roleSql = `SELECT * FROM role`;
   
-          db.promise().query(roleSql, (err, data) => {
+          db.query(roleSql, (err, data) => {
             if (err) throw err; 
             const roleList = data.map(({ id, title }) => ({ name: title, value: id }));
             
@@ -263,7 +254,7 @@ updateEmployee = () => {
                   params[1] = employee 
                   const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
   
-                  connection.query(sql, params, (err, result) => {
+                  db.query(sql, params, (err, result) => {
                     if (err) throw err;
                   console.log("Employee has been updated!");
                 

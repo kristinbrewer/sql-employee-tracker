@@ -151,13 +151,34 @@ addRole = () => {
             type: 'input'
         }
     ])
-    .then(answers => {
+    .then(answer => {
         const params = [answer.addRole, answer.addSalary];
+        //pulls department from department table
+        const deptSql = 'SELECT dept_name, id FROM department';
 
-    })
-        const sql = 'INSERT INTO role (title) VALUES (?)';
-        
-}
+        db.promise().query(deptSql, (err,data) => {
+            if (err) throw err;
+            const dept = data.map(({ dept_name, id }) => ({ name: dept_name, value: id }));
+
+        inquirer.prompt ([
+        {   name: 'addDept',
+            message: 'What is the department of the role you want to add?',
+            choices: dept
+        }
+        ])
+        .then (deptAnswer => {
+            const dept = deptAnswer.dept;
+            params.push(dept);
+            const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+            db.query(sql, params, (err, result) => {
+                if (err) throw err;
+                console.log('added roles');
+
+            });
+        });
+    });      
+}); 
+};
 //function to create new department 
 addDepartment = () => {
     //create a new department
